@@ -4,21 +4,31 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
-public class Database {
+public class Database  {
 	static final String dbUrl = "jdbc:sqlite:./sqlite/db/library.db";
 	final String EOL = System.lineSeparator();
 	static Connection conn;
-	public Database() {
+	static Statement stmt;
+	final long UNIXMONTH = 2592000;
+	public Database() throws SQLException { 
 		createLibraryDatabase();
+		stmt = conn.createStatement();
 		createBooksTable();
 		createBorrowedBooksTable();
 		createCustomerTable();
 		createHistoryTable();
+
 	}
-	public void createLibraryDatabase() {
+
+	public void createLibraryDatabase() throws SQLException {
 		File dir = new File("./sqlite/db");
 		// attempt to create the directory here
 		boolean successful = dir.mkdirs();
@@ -32,87 +42,109 @@ public class Database {
 			// creating the directory failed
 			System.out.println("failed trying to create the directory");
 		}
-		try {
 			conn = DriverManager.getConnection(dbUrl);
 			if (conn != null) {
 				System.out.println("A new database has been created.");
 			}
-		}
-		catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
 	}
-	public void createBooksTable() {
-		String sql = "CREATE TABLE IF NOT EXISTS books (\n" +
-				"isbn integer PRIMARY KEY NOT NULL, \n"+
-				"title text NOT NULL, \n " +
-				"author text NOT NULL, \n " +
-				"genre text NOT NULL, \n" +
-				"shelf integer NOT NULL, \n"+
-				"publisher text NOT NULL, \n" +
-				"quantity integer NOT NULL, \n" +
-				"pages integer NOT NULL \n" +
+	public void createBooksTable() throws SQLException {
+		String sql = "CREATE TABLE IF NOT EXISTS books (" +
+				"book_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "+
+				"title TEXT NOT NULL,  " +
+				"author TEXT NOT NULL,  " +
+				"genre TEXT NOT NULL, " +
+				"shelf INTEGER NOT NULL, "+
+				"publisher TEXT NOT NULL, " +
+				"quantity INTEGER NOT NULL, " +
+				"pages INTEGER NOT NULL, " +
+				"isbn TEXT NOT NULL" +
 				");";
-		try	{
-			Statement stmt = conn.createStatement();
 			stmt.execute(sql);
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
+
 	}
-	public void createBorrowedBooksTable() {
-		String sql = "CREATE TABLE IF NOT EXISTS borrowed_books (\n" +
-				"isbn integer PRIMARY KEY NOT NULL, \n"+
-				"card_id integer NOT NULL, \n " +
-				"borrowed_date integer NOT NULL, \n " +
-				"return_date integer NOT NULL \n" +
+	public void createBorrowedBooksTable()throws SQLException  {
+		String sql = "CREATE TABLE IF NOT EXISTS borrowed_books (" +
+				"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+				"card_id INTEGER NOT NULL, "+
+				"book_id INTEGER NOT NULL, " +
+				"borrowed_epoch INTEGER(8) NOT NULL, " +
+				"return_epoch INTEGER(8) NOT NULL " +
 				");";
-		try {
-			Statement stmt = conn.createStatement();
 			stmt.execute(sql);
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
+
 	}
-	public void createCustomerTable() {
-		String sql = "CREATE TABLE IF NOT EXISTS customer (\n" +
-				"card_id integer PRIMARY KEY NOT NULL, \n"+
-				"name text NOT NULL, \n " +
-				"address text NOT NULL, \n " +
-				"phone_nr text NOT NULL\n" +
+	public void createCustomerTable() throws SQLException  {
+		String sql = "CREATE TABLE IF NOT EXISTS customer (" +
+				"card_id INTEGER PRIMARY KEY NOT NULL,"+
+				"name TEXT NOT NULL,  " +
+				"address TEXT NOT NULL, " +
+				"phone_nr TEXT NOT NULL" +
 				");";
-		try {
-			Statement stmt = conn.createStatement();
 			stmt.execute(sql);
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
 	}
-	public void createHistoryTable() {
-		String sql = "CREATE TABLE IF NOT EXISTS history (\n" +
-				"card_id integer PRIMARY KEY NOT NULL, \n"+
-				"isbn integer NOT NULL, \n " +
-				"returned_on_time text NOT NULL, \n " +
-				"rating integer NOT NULL \n" +
+	public void createHistoryTable() throws SQLException  {
+		String sql = "CREATE TABLE IF NOT EXISTS history (" +
+				"card_id INTEGER PRIMARY KEY NOT NULL, "+
+				"book_id INTEGER NOT NULL,  " +
+				"returned_on_time TEXT NOT NULL,  " +
+				"rating INTEGER NOT NULL " +
 				");";
-		try {
-			Statement stmt = conn.createStatement();
 			stmt.execute(sql);
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
 	}
-	public void addBook(int isbn, String title, String author, String genre, int shelf, String publisher, int quantity, int pages) {
+	public void addBook(String isbn, String title, String author, String genre, int shelf, String publisher, int quantity, int pages)  {
 		String sql = "INSERT INTO books " + EOL +
-				"(isbn, title, author, genre, shelf, publisher, quantity, pages) " + EOL +
+				"(title, author, genre, shelf, publisher, quantity, pages, isbn) " + EOL +
 				"VALUES " + EOL +
-				"(" + isbn + ",'" + title + "', '" + author + "', '" + genre + "'," + shelf + EOL +
-				",'" + publisher + "', " + quantity +"," + pages +");";
-		try {
-			Statement stmt = conn.createStatement();
-			stmt.execute(sql);
+				"('"  + title + "', '" + author + "', '" + genre + "'," + shelf + EOL +
+				",'" + publisher + "', " + quantity +"," + pages + ", " + isbn + ");";
+		try {	
+		stmt.execute(sql);
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
+        }
+	}
+	public void addCustomer(int card_id, String name, String address, String phone_nr) throws SQLException {
+		String sql = "INSERT INTO customer " + EOL +
+				"(card_id, name, address, phone_nr) " + EOL +
+				"VALUES " + EOL +
+				"("+card_id+", '"+ name + "', '" + address + "', '" + phone_nr +"');";
+			stmt.execute(sql);
+	}
+	public void addBorrowed(int book_id, int card_id) throws SQLException {
+		long unixBorrowed = System.currentTimeMillis() / 1000L;
+		long unixReturn = unixBorrowed + UNIXMONTH;
+		String sql = "INSERT INTO borrowed_books" +
+					"(book_id, card_id, borrowed_epoch, return_epoch)"  +
+					"VALUES " +
+					"("+book_id+","+card_id+", "+unixBorrowed+", "+unixReturn+");";
+		stmt.execute(sql);
+	}
+	public BorrowedBook[] getBorrowedBooks(int card_id) throws SQLException {
+
+		ArrayList<BorrowedBook> borrowed_list = new ArrayList<BorrowedBook>();
+		String title, author, genre, publisher;
+		long isbn, borrowed_epoch, return_epoch;
+		int pages, book_id;
+		String sql = "SELECT * FROM books INNER JOIN borrowed_books USING(book_id)"
+					+ " WHERE card_id = "+card_id;
+		
+		ResultSet rs = stmt.executeQuery(sql);		
+		
+		while (rs.next()) {
+			book_id = rs.getInt("book_id");
+			String sql2 = "SELECT * FROM books WHERE book_id ="+book_id;
+			borrowed_epoch = rs.getLong("borrowed_epoch");
+			return_epoch = rs.getLong("return_epoch");
+			title = rs.getString("title");
+			author = rs.getString("author");
+			genre = rs.getString("genre");
+			publisher = rs.getString("publisher");
+			isbn = rs.getLong("isbn");
+			pages = rs.getInt("pages");
+			BorrowedBook temp = new BorrowedBook(title, author, genre, publisher, pages, isbn, borrowed_epoch, return_epoch, card_id);
+			borrowed_list.add(temp);	
 		}
+		BorrowedBook[] borrowedArray = borrowed_list.toArray(new BorrowedBook[borrowed_list.size()]);
+		return borrowedArray;
 	}
 }

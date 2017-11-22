@@ -1,14 +1,15 @@
 package database;
 import static dit042.SimpleIO.*;
+
+import java.sql.SQLException;
 public class Main {
 	String DbUrl = "./sqlite/db/test.db";
 	static Database library;
 	final String EOL = System.lineSeparator();
-	public Main() {
+	public Main() throws SQLException {
 		library = new Database();
 	}
-
-	public void menu() {
+	public void menu() throws SQLException  {
 		int choice;
 		do {
 			System.out.println(menuList());
@@ -27,12 +28,15 @@ public class Main {
 			case 3:
 				addBookInput();
 				break;
-				/*case 4: 
-				addCustomer();
+				case 4: 
+				addCustomerInput();
 				break;
 			case 5:
 				listBorrowedBooks();
-				break;*/
+				break;
+			case 6: 
+				borrowBook();
+				break;
 			default:
 				System.out.println("Invalid input.");
 				menu();
@@ -46,35 +50,69 @@ public class Main {
 				"3. Add a book" + EOL +
 				"4. Add a customer" + EOL +
 				"5. View borrowed books" + EOL +
+				"6. Borrow a book" + EOL +
 				"================================================" + EOL +
 				"Enter choice: ";
 		return result;	
 	}
-	public void addBookInput() {
-		int isbn, shelf, quantity, pages;
-		String title, author, genre, publisher;
+	public void addBookInput() throws SQLException {
+		int shelf, quantity, pages;
+		String isbn, title, author, genre, publisher;
 		System.out.println("Adding a book");
 		System.out.println("ISBN: ");
-		isbn = readInt();
+		isbn = readString();
 		System.out.println("Title: ");
-		title = readString();
+		title = readLine();
 		System.out.println("Author: ");
-		author = readString();
+		author = readLine();
 		System.out.println("Genre: ");
-		genre = readString();
+		genre = readLine();
 		System.out.println("Shelf: ");
 		shelf = readInt();
 		System.out.println("Publisher: ");
-		publisher = readString();
+		publisher = readLine();
 		System.out.println("Quantity: ");
 		quantity = readInt();
 		System.out.println("Pages: ");
 		pages = readInt();
-
 		library.addBook(isbn, title, author, genre, shelf, publisher, quantity, pages);
-
 	}
-	public static void main(String[] args) {
+	public void addCustomerInput() throws SQLException {
+		int card_id;
+		String name, address, phone_nr;
+		System.out.println("Adding a customer");
+		System.out.println("Card id: ");
+		card_id = readInt();
+		System.out.println("Name: ");
+		name = readLine();
+		System.out.println("Address");
+		address = readLine();
+		System.out.println("Phone nr: ");
+		phone_nr = readLine();
+		library.addCustomer(card_id, name, address, phone_nr);
+	}
+	public void borrowBook() throws SQLException {
+		int card_id, book_id;
+		System.out.println("Input the ID of the chosen book: ");
+		book_id = readInt();
+		System.out.println("Input Card ID: ");
+		card_id = readInt();
+		library.addBorrowed(book_id, card_id);
+	}
+	public void listBorrowedBooks() throws SQLException {
+		int card_id;
+		System.out.println("Input your Library Card ID: ");
+		card_id = readInt();
+		String listOfBooks = "";
+		BorrowedBook[] borrowedList = library.getBorrowedBooks(card_id);
+		
+		for(int i = 0; i < borrowedList.length; i++) {
+			
+			listOfBooks+= borrowedList[i].toString() + EOL;
+		}
+		System.out.println(listOfBooks);
+	}
+	public static void main(String[] args) throws SQLException {
 		Main program = new Main();
 		program.menu();
 	}
