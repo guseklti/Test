@@ -25,6 +25,7 @@ public class Database  {
 		createBorrowedBooksTable();
 		createCustomerTable();
 		createHistoryTable();
+		createAdminTable();
 
 	}
 
@@ -91,6 +92,13 @@ public class Database  {
 				");";
 			stmt.execute(sql);
 	}
+	public void createAdminTable() throws SQLException {
+		String sql = "CREATE TABLE IF NOT EXISTS admin (" +
+					"id INTEGER PRIMARY KEY AUTOINCREMENT," +
+					"username TEXT UNIQUE NOT NULL," +
+					"password TEXT NOT NULL);";
+			stmt.execute(sql);
+	}
 	public void addBook(String isbn, String title, String author, String genre, int shelf, String publisher, int quantity, int pages)  {
 		String sql = "INSERT INTO books " + EOL +
 				"(title, author, genre, shelf, publisher, quantity, pages, isbn) " + EOL +
@@ -132,7 +140,6 @@ public class Database  {
 		
 		while (rs.next()) {
 			book_id = rs.getInt("book_id");
-			String sql2 = "SELECT * FROM books WHERE book_id ="+book_id;
 			borrowed_epoch = rs.getLong("borrowed_epoch");
 			return_epoch = rs.getLong("return_epoch");
 			title = rs.getString("title");
@@ -146,5 +153,15 @@ public class Database  {
 		}
 		BorrowedBook[] borrowedArray = borrowed_list.toArray(new BorrowedBook[borrowed_list.size()]);
 		return borrowedArray;
+	}
+	public boolean verifyLogin(String username, String password) throws SQLException {
+		boolean result = false;
+		String sql = "SELECT * FROM admin WHERE username = '"+username+"'";
+		ResultSet rs = stmt.executeQuery(sql);
+		
+		if (password.equals(rs.getString("password"))) {
+			result = true;
+		}		
+		return result;
 	}
 }

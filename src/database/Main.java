@@ -3,8 +3,8 @@ import static dit042.SimpleIO.*;
 
 import java.sql.SQLException;
 public class Main {
-	String DbUrl = "./sqlite/db/test.db";
 	static Database library;
+	static boolean adminStatus = false;
 	final String EOL = System.lineSeparator();
 	public Main() throws SQLException {
 		library = new Database();
@@ -37,9 +37,45 @@ public class Main {
 			case 6: 
 				borrowBook();
 				break;
+			case 7:
+				login();
 			default:
 				System.out.println("Invalid input.");
 				menu();
+			}
+		} while (choice != 0);
+	}
+	public void adminMenu() throws SQLException {
+		int choice;
+		do {
+			System.out.println(adminMenuList());
+			choice = readInt();
+			
+			switch (choice) {
+			case 0:
+				System.out.println("Logging out.");
+				adminStatus = false;
+				break;
+			case 1:
+				addBookInput();
+				break;
+			case 2:
+				addCustomerInput();
+				break;
+			case 3: 
+				listBorrowedBooks(adminStatus);
+				break;
+			case 4:
+				listBorrowedBooks();
+			case 5:
+				checkAvailable();
+				break;
+			case 6:
+				reserveBook();
+				break;
+			default: 
+				System.out.println("Invalid input.");
+				adminMenu();
 			}
 		} while (choice != 0);
 	}
@@ -51,9 +87,21 @@ public class Main {
 				"4. Add a customer" + EOL +
 				"5. View borrowed books" + EOL +
 				"6. Borrow a book" + EOL +
+				"7. Admin login" + EOL +
 				"================================================" + EOL +
 				"Enter choice: ";
 		return result;	
+	}
+	public String adminMenuList() {
+		String result = "||>>>>Admin Page <<<<<||" + EOL +
+						"1. Add a book" + EOL +
+						"2. Add a customer" + EOL +
+						"3. Who has borrowed a specific book"  + EOL +
+						"4. All lent out books" + EOL +
+						"5. Availability of a book "  + EOL +
+						"------------------------" + EOL +
+						"Enter choice: ";
+		return result;
 	}
 	public void addBookInput() throws SQLException {
 		int shelf, quantity, pages;
@@ -111,6 +159,38 @@ public class Main {
 			listOfBooks+= borrowedList[i].toString() + EOL;
 		}
 		System.out.println(listOfBooks);
+	}
+	public void listBorrowedBooks(boolean admin) throws SQLException {
+		//TO-DO
+	}
+	public void checkAvailable() {
+		
+	}
+	public void reserveBook() {
+		
+	}
+	public void login() throws SQLException {
+		String username, password;
+		char choice;
+		System.out.println("Username: ");
+		username = readString();
+		System.out.println("Password: ");
+		password = readString();
+		
+		if (library.verifyLogin(username, password)) {
+			adminStatus = true;
+			adminMenu();
+		}
+		else {
+			System.out.println("Incorrect login. Try again? Y/N");
+			choice = readChar();
+			if (choice == 'y' || choice == 'Y') {
+				login();
+			}
+			else if (choice == 'n' || choice == 'N') {
+				return;
+			}
+		}
 	}
 	public static void main(String[] args) throws SQLException {
 		Main program = new Main();
