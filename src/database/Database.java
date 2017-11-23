@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.JOptionPane;
+
 public class Database  {
 	static final String dbUrl = "jdbc:sqlite:./sqlite/db/library.db";
 	final String EOL = System.lineSeparator();
@@ -147,4 +149,34 @@ public class Database  {
 		BorrowedBook[] borrowedArray = borrowed_list.toArray(new BorrowedBook[borrowed_list.size()]);
 		return borrowedArray;
 	}
+	
+	public String search(String search, String category) {
+	String result = "";
+		try {
+			
+			Connection conn = DriverManager.getConnection(dbUrl);
+
+		      
+		      Statement stmt = conn.createStatement();
+		      ResultSet rs = stmt.executeQuery("SELECT title, author, genre, pages, shelf  FROM books WHERE "+category+" LIKE '%"+search+"%'");
+		      
+		      while (rs.next()) {
+		    	  String title = rs.getString("title");
+		    	  String author = rs.getString("author");
+		    	  String genre = rs.getString("genre");
+		    	  String pages = rs.getString("pages");
+		    	  String shelf = rs.getString("shelf");
+		    	  
+		    	  System.out.print( "Title: " + title + "\n" +"Author: "+ author + "\n" +"Genre: "+ genre + "\n" +"Number of pages: "+pages + "\n" + "Shelf:"+shelf+ "\n") ;
+		      }
+			
+	
+		
+		      }
+	catch(Exception e) {
+		JOptionPane.showMessageDialog(null, e);
+	}
+		return result;
+	}
+	
 }
