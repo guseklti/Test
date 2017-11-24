@@ -7,15 +7,16 @@ import java.util.concurrent.TimeUnit;
 
 public class BorrowedBook extends Book {
 	private long epoch_borrowed, epoch_return;
-	private int card_id;
+	private int card_id, book_id;
 	
 
 	
-	public BorrowedBook(String title, String author, String genre, String publisher, int pages, long isbn, long epoch_borrowed, long epoch_return, int card_id) {
+	public BorrowedBook(int book_id, String title, String author, String genre, String publisher, int pages, long isbn, long epoch_borrowed, long epoch_return, int card_id) {
 		super(title, author, genre, publisher, pages, isbn);
 		this.epoch_borrowed = epoch_borrowed;
 		this.epoch_return = epoch_return;
 		this.card_id = card_id;
+		this.book_id = book_id;
 	}
 	public  String formatEpoch(long epoch) {
 		 Date date = new Date(epoch * 1000L);
@@ -45,16 +46,46 @@ public class BorrowedBook extends Book {
 		due = (int) TimeUnit.SECONDS.toDays(this.epoch_return);
 		return (now - due) * -1;
 	}
-	public String toString() {
-		String result="";
+	public boolean onTime() {
+
+		boolean result = false;
 		if((System.currentTimeMillis() / 1000L) < this.epoch_return) {
-			result = this.getTitle()+ " is due in " + this.getDaysDue() + " days.";  
+			result = true; 
 		}
 		else if((System.currentTimeMillis() / 1000L) > this.epoch_return) {
-			result = this.getTitle()+ " was due " + this.getDaysOver() + " days ago.";
+			result = false;
 		}
 		return result;
 	}
-	
+	public String toString() {
+		String result="";
+		if((System.currentTimeMillis() / 1000L) < this.epoch_return) {
+			result = this.getTitle() + " is due in " + this.getDaysDue() + " days.";  
+		}
+		else if((System.currentTimeMillis() / 1000L) > this.epoch_return) {
+			result = this.getTitle() + " was due " + this.getDaysOver() + " days ago.";
+		}
+		return result;
+	}
+	public String toStringReturn() {
+		String result="";
+		if((System.currentTimeMillis() / 1000L) < this.epoch_return) {
+			result ="Book ID: " + this.book_id+"." + this.getTitle() + " is due in " + this.getDaysDue() + " days.";  
+		}
+		else if((System.currentTimeMillis() / 1000L) > this.epoch_return) {
+			result ="Book ID: " + this.book_id+"." + this.getTitle() + " was due " + this.getDaysOver() + " days ago.";
+		}
+		return result;
+	}
+	public String returnOnTime() {
+		String result="";
+		if((System.currentTimeMillis() / 1000L) < this.epoch_return) {
+			result= "Yes";
+		}
+		else if((System.currentTimeMillis() / 1000L) > this.epoch_return) {
+			result ="No, " + this.getDaysOver() + " days past due";
+		}
+		return result;
+	}
 	
 }

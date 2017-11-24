@@ -9,11 +9,6 @@ import java.sql.Statement;
 
 import javax.swing.JOptionPane;
 public class Main {
-<<<<<<< HEAD
-=======
-	
-	
->>>>>>> 9790b5da7c4ccbfaf9acabd14049260f1829d671
 	static Database library;
 	static boolean adminStatus = false;
 	final String EOL = System.lineSeparator();
@@ -50,6 +45,9 @@ public class Main {
 				break;
 			case 7:
 				login();
+			case 8:
+				returnBookInput();
+				break;
 			default:
 				System.out.println("Invalid input.");
 				menu();
@@ -99,6 +97,7 @@ public class Main {
 				"5. View borrowed books" + EOL +
 				"6. Borrow a book" + EOL +
 				"7. Admin login" + EOL +
+				"8. Return a book" + EOL +
 				"================================================" + EOL +
 				"Enter choice: ";
 		return result;	
@@ -110,6 +109,7 @@ public class Main {
 						"3. Who has borrowed a specific book"  + EOL +
 						"4. All lent out books" + EOL +
 						"5. Availability of a book "  + EOL +
+						"6. Reserve a book" + EOL +
 						"------------------------" + EOL +
 						"Enter choice: ";
 		return result;
@@ -141,7 +141,7 @@ public class Main {
 		String name, address, phone_nr;
 		System.out.println("Adding a customer");
 		System.out.println("Card id: ");
-		card_id = readInt();
+		card_id = readCardID();
 		System.out.println("Name: ");
 		name = readLine();
 		System.out.println("Address");
@@ -155,13 +155,12 @@ public class Main {
 		System.out.println("Input the ID of the chosen book: ");
 		book_id = readInt();
 		System.out.println("Input Card ID: ");
-		card_id = readInt();
+		card_id = readCardID();
 		library.addBorrowed(book_id, card_id);
 	}
 	public void listBorrowedBooks() throws SQLException {
 		int card_id;
-		System.out.println("Input your Library Card ID: ");
-		card_id = readInt();
+		card_id = readCardID();
 		String listOfBooks = "";
 		BorrowedBook[] borrowedList = library.getBorrowedBooks(card_id);
 		
@@ -171,14 +170,72 @@ public class Main {
 		}
 		System.out.println(listOfBooks);
 	}
+	public void listBorrowedBooks(int card_id) throws SQLException {
+		String listOfBooks = "";
+		BorrowedBook[] borrowedList = library.getBorrowedBooks(card_id);
+		for(int i = 0; i < borrowedList.length; i++) {
+			listOfBooks+= borrowedList[i].toStringReturn() + EOL;
+		}
+		System.out.println(listOfBooks);
+	}
 	public void listBorrowedBooks(boolean admin) throws SQLException {
 		//TO-DO
 	}
 	public void checkAvailable() {
-		
+		//TO-DO
 	}
 	public void reserveBook() {
-		
+		//TO-DO
+	}
+	public int readCardID() {
+		int result;
+		String check = "";
+		System.out.println("Input the Library Card ID: ");
+		result = readInt();
+		check += result;
+		if (check.length() < 4 || check.length() > 4) {
+			System.out.println("Library Card ID is only 4 digits long, please try again.");
+			readCardID();
+		}
+		return result;
+	}
+	public int readRating() {
+		int result;
+		System.out.println("Rate the book between 1 and 5");
+		result = readInt();
+		if(result >= 1 && result <= 5) {
+			return result;
+		}
+		else {
+			System.out.println("Rating must be between 1 to 5.");
+			readRating();
+		}
+		return result;
+	}
+	public int rateBook() {
+		int rating = 0;
+		char ratingChoice;
+		System.out.println("Would you like to rate the book? Y/N");
+		ratingChoice = readChar();
+		if(ratingChoice == 'y' || ratingChoice == 'Y') {
+			rating = readRating();
+		}
+		else if (ratingChoice == 'n' || ratingChoice == 'N') {
+			rating = 0;
+		}
+		return rating;
+	}
+	public void returnBookInput()throws SQLException {
+		int card_id, book_id,rating;
+		char ratingChoice;
+		card_id = readCardID();
+		listBorrowedBooks(card_id);
+		System.out.println("Which book would you like to return?"+ EOL +
+							"Please input the Book ID: ");
+		book_id = readInt();
+		rating = rateBook();
+		library.returnBook(card_id, book_id, rating);
+		System.out.println("Book has been returned.");
 	}
 	public void login() throws SQLException {
 		String username, password;
@@ -203,54 +260,37 @@ public class Main {
 			}
 		}
 	}
-	public static void main(String[] args) throws SQLException {
-		Main program = new Main();
-		program.menu();
-	}
-	
-	
-	
-public void searchBook() throws SQLException {
-		
-		
+	public void searchBook() throws SQLException {
 		System.out.println("Search by...");
 		System.out.println("1) Title");
 		System.out.println("2) Author");
 		System.out.println("3) Genre");
-		
 		int option = readInt();
-		String category;
+		String searchPhrase, category = "";
 		switch(option) {
 		case 1 :
-		category="title";
-		searchInput(category);
-		break;
+			category="title";
+			break;
 		case 2: 
-			category="author";
-		searchInput(category);
-		break;
+			category="author";;
+			break;
 		case 3: 
-			category="Genre";
-		searchInput(category);
-		break;
-		
+			category="genre";
+			break;
+		case 4:
+			category="publisher";
+			break;
 		default: 
 			System.out.println("Invalid input");
 			searchBook();
 		}
-		}
-	
-	
-	public void searchInput(String category) {
-System.out.println("Search: ");
-		
-String search=readLine();
-
-library.search(search, category);
-
-	
-	
+		System.out.println("Search phrase: ");
+		searchPhrase = readLine();
+		System.out.println(library.search(searchPhrase, category));
 	}
-	
-
+	public static void main(String[] args) throws SQLException {
+		Main program = new Main();
+		program.menu();
 	}
+
+}
