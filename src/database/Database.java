@@ -143,6 +143,18 @@ public class Database  {
 					"("+book_id+","+card_id+", "+unixBorrowed+", "+unixReturn+");";
 		stmt.execute(sql);
 	}
+	public boolean checkIfAlreadyBorrowed(int book_id, int card_id) throws SQLException {
+		boolean result = false;
+		BorrowedBook[] borrowedList = getBorrowedBooks(card_id);
+		
+		for(int i = 0; i < borrowedList.length; i++) {
+			
+			if(book_id == borrowedList[i].getBook_ID()) {
+				result = true;
+			}
+		}
+		return result;
+	}
 	public BorrowedBook[] getBorrowedBooks(int card_id) throws SQLException {
 
 		ArrayList<BorrowedBook> borrowed_list = new ArrayList<BorrowedBook>();
@@ -258,6 +270,22 @@ public class Database  {
 		delete.setInt(1, card_id);
 		delete.setInt(2, book_id);
 		delete.execute();
-		
+	}
+	public boolean checkIfAvailable(int book_id) throws SQLException {
+		boolean result = false;
+		int quantity, borrowed;
+		String countBooks = "SELECT count(*) FROM borrowed_books WHERE book_id ="+book_id;
+		ResultSet nrOfBorrowed = stmt.executeQuery(countBooks);
+		borrowed = nrOfBorrowed.getInt(1);
+		String sqlQuantity = "SELECT quantity FROM books WHERE book_id ="+book_id;
+		ResultSet bookQuantity = stmt.executeQuery(sqlQuantity);
+		quantity = bookQuantity.getInt("quantity");
+		if(borrowed >= quantity) {
+			result = false;
+		}
+		else if (borrowed < quantity) {
+			result = true;
+		}
+		return result;
 	}
 }

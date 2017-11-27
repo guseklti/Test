@@ -154,9 +154,16 @@ public class Main {
 		int card_id, book_id;
 		System.out.println("Input the ID of the chosen book: ");
 		book_id = readInt();
-		System.out.println("Input Card ID: ");
 		card_id = readCardID();
-		library.addBorrowed(book_id, card_id);
+		if (library.checkIfAlreadyBorrowed(book_id, card_id)) {
+			System.out.println("You are not allowed to borrow several copies of the same book.");
+			return;
+		}
+		if (!library.checkIfAvailable(book_id)) {
+			System.out.println("All copies of this book is currently lent out.");
+			return;
+		}
+		else {library.addBorrowed(book_id, card_id);}
 	}
 	public void listBorrowedBooks() throws SQLException {
 		int card_id;
