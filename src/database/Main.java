@@ -9,11 +9,6 @@ import java.sql.Statement;
 
 import javax.swing.JOptionPane;
 public class Main {
-<<<<<<< HEAD
-=======
-	
-	
->>>>>>> 9790b5da7c4ccbfaf9acabd14049260f1829d671
 	static Database library;
 	static boolean adminStatus = false;
 	final String EOL = System.lineSeparator();
@@ -207,50 +202,36 @@ public class Main {
 		Main program = new Main();
 		program.menu();
 	}
-	
-	
-	
-public void searchBook() throws SQLException {
-		
-		
+	public void searchBook() throws SQLException {
 		System.out.println("Search by...");
 		System.out.println("1) Title");
 		System.out.println("2) Author");
 		System.out.println("3) Genre");
-		
+	
 		int option = readInt();
 		String category;
 		switch(option) {
 		case 1 :
-		category="title";
-		searchInput(category);
-		break;
+			category="title";
+			searchInput(category);
+			break;
 		case 2: 
 			category="author";
-		searchInput(category);
-		break;
+			searchInput(category);
+			break;
 		case 3: 
 			category="Genre";
-		searchInput(category);
-		break;
-		
+			searchInput(category);
+			break;
+	
 		default: 
 			System.out.println("Invalid input");
 			searchBook();
 		}
-		}
-	
-	
+	}
 	public void searchInput(String category) {
-System.out.println("Search: ");
-		
-String search=readLine();
-
-library.search(search, category);
-
-	
-	
+		System.out.println("Search: ");
+		String search=readLine();
+		library.search(search, category);
 	}
-	
-
-	}
+}
