@@ -34,9 +34,6 @@ public class Main {
 			case 3:
 				addBookInput();
 				break;
-				case 4: 
-				addCustomerInput();
-				break;
 			case 5:
 				listBorrowedBooks();
 				break;
@@ -82,6 +79,9 @@ public class Main {
 			case 6:
 				reserveBook();
 				break;
+			case 7:
+				checkDelayed();
+				break;
 			default: 
 				System.out.println("Invalid input.");
 				adminMenu();
@@ -93,7 +93,6 @@ public class Main {
 				"1. List a databse" + EOL +
 				"2. Search for a book" + EOL +
 				"3. Add a book" + EOL +
-				"4. Add a customer" + EOL +
 				"5. View borrowed books" + EOL +
 				"6. Borrow a book" + EOL +
 				"7. Admin login" + EOL +
@@ -110,6 +109,7 @@ public class Main {
 						"4. All lent out books" + EOL +
 						"5. Availability of a book "  + EOL +
 						"6. Reserve a book" + EOL +
+						"7. Check delayed books" + EOL +
 						"------------------------" + EOL +
 						"Enter choice: ";
 		return result;
@@ -187,6 +187,12 @@ public class Main {
 	}
 	public void listBorrowedBooks(boolean admin) throws SQLException {
 		//TO-DO
+	}
+	public void listDelayedBooks() throws SQLException {
+		
+		BorrowedBook[] delayedBooks = library.getDelayedBooks();
+		
+		
 	}
 	public void checkAvailable() {
 		//TO-DO
@@ -266,6 +272,11 @@ public class Main {
 				return;
 			}
 		}
+	}
+	public void checkDelayed() throws SQLException {
+		
+		System.out.println(library.getDelayedBooksList());
+		
 	}
 	public void searchBook() throws SQLException {
 		System.out.println("Search by...");
