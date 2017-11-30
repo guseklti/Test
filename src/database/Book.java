@@ -18,12 +18,12 @@ public class Book {
 
 	public String toString() {
 		
-		String result = "Title: " + title + EOL +
-						"Author: " + author + EOL +
-						"Genre: " + genre + EOL +
-						"Publisher: " + publisher  + EOL +
-						"Pages: " + pages + EOL +
-						"ISBN: " + isbn;
+		String result = "|Title: " + title + 
+						"| Author: " + author +
+						"| Genre: " + genre +
+						"| Publisher: " + publisher  +
+						"| Pages: " + pages + 
+						"| ISBN: " + isbn;
 		return result;		
 
 	}

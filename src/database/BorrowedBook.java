@@ -86,5 +86,13 @@ public class BorrowedBook extends Book {
 		}
 		return result;
 	}
+	public String delayedString() {
+		String result = "";
+		
+		result = this.toString() + " | Loaned out to Card #: " + this.card_id;
+		
+		return result;
+	}
+	
 	
 }

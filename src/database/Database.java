@@ -202,6 +202,39 @@ public class Database  {
 		
 		return result;
 	}
+	public String getDelayedBooksList() throws SQLException {
+		long todayEpoch = System.currentTimeMillis() / 1000L;
+		String result= "";
+		String title, author, genre, publisher;
+		long isbn, borrowed_epoch, return_epoch;
+		int pages, book_id, card_id;
+		ArrayList<BorrowedBook> delayedList = new ArrayList<BorrowedBook>();
+		String sql = "SELECT * FROM books INNER JOIN borrowed_books USING(book_id)  WHERE return_epoch <" + todayEpoch +
+				" ORDER BY card_id asc";
+		
+		ResultSet books = stmt.executeQuery(sql);
+		
+		while(books.next()) {
+			book_id = books.getInt("book_id");
+			borrowed_epoch = books.getLong("borrowed_epoch");
+			return_epoch = books.getLong("return_epoch");
+			title = books.getString("title");
+			author = books.getString("author");
+			genre = books.getString("genre");
+			publisher = books.getString("publisher");
+			isbn = books.getLong("isbn");
+			pages = books.getInt("pages");
+			card_id = books.getInt("card_id");
+			BorrowedBook temp = new BorrowedBook(book_id,title, author, genre, publisher, pages, isbn, borrowed_epoch, return_epoch, card_id);
+			delayedList.add(temp);
+		}
+		
+		for(BorrowedBook delayedBook : delayedList) {
+			result+= delayedBook.delayedString() + EOL;
+		}
+		
+		return result;
+	}
 	public boolean verifyLogin(String username, String password) throws SQLException {
 		boolean result = false;
 		String sql = "SELECT * FROM admin WHERE username = '"+username+"'";
@@ -214,21 +247,54 @@ public class Database  {
 	}
 	public String search(String search, String category) {
 		String result = "";
+		ArrayList<Book> searchedBooks = new ArrayList<Book>();
+		String sql = "SELECT * FROM books " +
+				"WHERE "+category+" LIKE '%"+search+"%' "+ 
+				" ORDER BY  title ASC ";
 		try {
-			ResultSet rs = stmt.executeQuery("SELECT title, author, genre, pages, shelf  FROM books WHERE "+category+" LIKE '%"+search+"%'");  
+			ResultSet rs = stmt.executeQuery(sql);  
 			while (rs.next()) {
 				String title = rs.getString("title");
 				String author = rs.getString("author");
 				String genre = rs.getString("genre");
-				String pages = rs.getString("pages");
-				String shelf = rs.getString("shelf");	  
-				result+="Title: " + title + "\n" +"Author: "+ author + "\n" +"Genre: "+ genre + "\n" +"Number of pages: "+pages + "\n" + "Shelf:"+shelf+ "\n";
+				String publisher = rs.getString("publisher");
+				int pages = rs.getInt("pages");
+				int shelf = rs.getInt("shelf");	  
+				int book_id = rs.getInt("book_id");
+				long isbn = rs.getLong("isbn");
+				Book temp = new Book(title, author, genre, publisher, pages, isbn, book_id);	
+				searchedBooks.add(temp);
+			}
+			Book[] searchedArray = searchedBooks.toArray(new Book[searchedBooks.size()]);
+			double[] rating = getRating(searchedArray);
+			
+			for(int i = 0; i < searchedArray.length; i++) {
+				result+= String.format("%s | Rating: %.1f",searchedArray[i], rating[i]);
 			}
 		}
 		catch(Exception e) {
 			JOptionPane.showMessageDialog(null, e);
 		}
 		return result;
+	}
+	public double[] getRating(Book[] searchedArray) throws SQLException {
+		
+		double[] ratingArray = new double[searchedArray.length];
+		
+		for(int i = 0; i < searchedArray.length; i++) {
+			double count = 0, sum = 0;
+			String sqlCount = "SELECT count(*) FROM history WHERE book_id =" + searchedArray[i].getBook_ID();
+			String sqlSum = "SELECT sum(rating) FROM history WHERE book_id =" + searchedArray[i].getBook_ID(); 
+			
+			ResultSet rsCount = stmt.executeQuery(sqlCount);
+			count = rsCount.getInt(1);
+			ResultSet rsSum = stmt.executeQuery(sqlSum);
+			sum =rsSum.getInt(1);
+			double rating = sum / count; 
+			ratingArray[i] = rating;
+		}
+		
+		return ratingArray;
 	}
 	public void addDebt(int card_id, int debt) throws SQLException {
 		String sql = "UPDATE INTO customer_debt" +
