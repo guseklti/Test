@@ -1,5 +1,4 @@
 package database;
-
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -14,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JOptionPane;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 public class Database  {
 	static final String dbUrl = "jdbc:sqlite:./sqlite/db/library.db";
@@ -30,8 +31,22 @@ public class Database  {
 		createHistoryTable();
 		createAdminTable();
 		createDebtTable();
+		/*createAdmin("tiEkl", "hejhej123");
+		createAdmin("maDan", "password");
+		createAdmin("saBol", "1ab2c3");
+		System.out.println("Admins created");*/
 	}
-
+	public void createAdmin(String username, String password) throws SQLException {
+		String sql = "INSERT INTO admin (username, password) VALUES(?,?)";
+		
+		String encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+		
+		PreparedStatement create = conn.prepareStatement(sql);
+		create.setString(1, username);
+		create.setString(2, encryptedPassword);
+		create.execute();
+		create.close();
+	}
 	public void createLibraryDatabase() throws SQLException {
 		File dir = new File("./sqlite/db");
 		// attempt to create the directory here
@@ -92,7 +107,7 @@ public class Database  {
 				"card_id INTEGER NOT NULL, " +
 				"book_id INTEGER NOT NULL,  " +
 				"returned_on_time TEXT NOT NULL,  " +
-				"rating INTEGER NOT NULL " +
+				"rating INTEGER " +
 				");";
 			stmt.execute(sql);
 	}
@@ -202,6 +217,26 @@ public class Database  {
 		
 		return result;
 	}
+	public String searchOneBook(int book_id) throws SQLException {
+		String title, author, genre, publisher;
+		long isbn;
+		int pages;
+		String sql = "SELECT * FROM books books "
+					+ " WHERE book_id = "+book_id;
+		
+		ResultSet rs = stmt.executeQuery(sql);		
+		title = rs.getString("title");
+		author = rs.getString("author");
+		genre = rs.getString("genre");
+		publisher = rs.getString("publisher");
+		isbn = rs.getLong("isbn");
+		pages = rs.getInt("pages");
+		Book searchedBook = new Book(title, author, genre, publisher, pages, isbn, book_id);			
+		String result = searchedBook.toString();
+		rs.close();
+		stmt.close();
+		return result;
+	}
 	public String getDelayedBooksList() throws SQLException {
 		long todayEpoch = System.currentTimeMillis() / 1000L;
 		String result= "";
@@ -239,8 +274,8 @@ public class Database  {
 		boolean result = false;
 		String sql = "SELECT * FROM admin WHERE username = '"+username+"'";
 		ResultSet rs = stmt.executeQuery(sql);
-		
-		if (password.equals(rs.getString("password"))) {
+		String hashed = rs.getString("password");
+		if (BCrypt.checkpw(password, hashed)) {
 			result = true;
 		}		
 		return result;
@@ -283,7 +318,7 @@ public class Database  {
 		
 		for(int i = 0; i < searchedArray.length; i++) {
 			double count = 0, sum = 0;
-			String sqlCount = "SELECT count(*) FROM history WHERE book_id =" + searchedArray[i].getBook_ID();
+			String sqlCount = "SELECT count(*) FROM history WHERE book_id =" + searchedArray[i].getBook_ID() + " AND rating > 0";
 			String sqlSum = "SELECT sum(rating) FROM history WHERE book_id =" + searchedArray[i].getBook_ID(); 
 			
 			ResultSet rsCount = stmt.executeQuery(sqlCount);
@@ -297,20 +332,24 @@ public class Database  {
 		return ratingArray;
 	}
 	public void addDebt(int card_id, int debt) throws SQLException {
-		String sql = "UPDATE INTO customer_debt" +
-					 "SET accumulated_debt = accumulated_debt + ? " +
-					 "WHERE card_id = ? ";
+		String sql = "UPDATE customer_debt " +
+					 " SET accumulated_fees = accumulated_fees + ? " +
+					 " WHERE card_id = ? ";
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		pstmt.setInt(1, debt);
 		pstmt.setInt(2, card_id);
+		pstmt.executeUpdate();
+		pstmt.close();
 	}
 	public void payDebt(int card_id, int payment) throws SQLException {
-		String sql = "UPDATE INTO customer_debt" +
-				 "SET paid = paid + ? " +
-				 "WHERE card_id = ? ";
+		String sql = "UPDATE customer_debt " +
+				 " SET paid = paid + ? " +
+				 " WHERE card_id = ? ";
 	PreparedStatement pstmt = conn.prepareStatement(sql);
 	pstmt.setInt(1, payment);
 	pstmt.setInt(2, card_id);
+	pstmt.executeUpdate();
+	pstmt.close();
 	}
 	public void returnBook(int card_id, int book_id, int rating) throws SQLException {
 		BorrowedBook book;
@@ -329,13 +368,20 @@ public class Database  {
 		insert.setInt(1, card_id);
 		insert.setInt(2, book_id);
 		insert.setString(3, onTime);
-		insert.setInt(4, rating);
+		if (rating <= 0) {
+			insert.setNull(4, rating);
+		}
+		else {
+			insert.setInt(4, rating);
+		}
 		insert.execute();
+		insert.close();
 		String deleteBorrowed =  "DELETE FROM borrowed_books WHERE card_id = ? AND book_id = ?";		
 		PreparedStatement delete = conn.prepareStatement(deleteBorrowed);
 		delete.setInt(1, card_id);
 		delete.setInt(2, book_id);
 		delete.execute();
+		delete.close();
 	}
 	public boolean checkIfAvailable(int book_id) throws SQLException {
 		boolean result = false;
@@ -354,4 +400,14 @@ public class Database  {
 		}
 		return result;
 	}
+	public void removeBook(int book_id) throws SQLException {
+		String delete = "DELETE FROM books WHERE book_id = ?";
+		
+		PreparedStatement pstmt = conn.prepareStatement(delete);
+		pstmt.setInt(1, book_id);
+		pstmt.execute();
+		pstmt.close();
+		return;
+	}
+	
 }

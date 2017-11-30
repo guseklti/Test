@@ -42,6 +42,7 @@ public class Main {
 				break;
 			case 7:
 				login();
+				break;
 			case 8:
 				returnBookInput();
 				break;
@@ -82,6 +83,12 @@ public class Main {
 			case 7:
 				checkDelayed();
 				break;
+			case 8:
+				changeQuantityInput();
+				break;
+			case 9:
+				removeBookInput();
+				break;
 			default: 
 				System.out.println("Invalid input.");
 				adminMenu();
@@ -103,6 +110,7 @@ public class Main {
 	}
 	public String adminMenuList() {
 		String result = "||>>>>Admin Page <<<<<||" + EOL +
+						"0. To logout" + EOL +
 						"1. Add a book" + EOL +
 						"2. Add a customer" + EOL +
 						"3. Who has borrowed a specific book"  + EOL +
@@ -110,9 +118,41 @@ public class Main {
 						"5. Availability of a book "  + EOL +
 						"6. Reserve a book" + EOL +
 						"7. Check delayed books" + EOL +
+						"8. Change quantity of a book" + EOL +
+						"9. Remove a book" + EOL + 
 						"------------------------" + EOL +
 						"Enter choice: ";
 		return result;
+	}
+	public char yesOrNo() {
+		char result;
+		result = readChar();
+		if (result == 'n' || result == 'N' || result == 'Y' || result == 'y') {
+			return result;
+		}
+		else { 
+			System.out.println("Incorrect input. You must answer with Y or N.");
+			yesOrNo();
+		}
+		return result;
+	}
+	public void removeBookInput() throws SQLException {
+		System.out.println("Input the ID of the book you'd like to remove: ");
+		int book_id = readInt();
+		System.out.println(library.searchOneBook(book_id));
+		System.out.println("Confirm deleting this book from the registry? Y/N");
+		char choice = yesOrNo();
+		if(choice == 'y' || choice == 'Y') {
+			library.removeBook(book_id);
+			System.out.println("Book deleted.");
+		}
+		else if(choice == 'n' || choice == 'N') {
+			System.out.println("Book was not deleted.");
+		}
+	}
+	public void changeQuantityInput() {
+		System.out.println("");
+		int choice = readInt();
 	}
 	public void addBookInput() throws SQLException {
 		int shelf, quantity, pages;
@@ -187,12 +227,6 @@ public class Main {
 	}
 	public void listBorrowedBooks(boolean admin) throws SQLException {
 		//TO-DO
-	}
-	public void listDelayedBooks() throws SQLException {
-		
-		BorrowedBook[] delayedBooks = library.getDelayedBooks();
-		
-		
 	}
 	public void checkAvailable() {
 		//TO-DO
@@ -308,10 +342,7 @@ public class Main {
 		}
 	}
 	public void searchInput(String category) {
-		System.out.println("Search: ");
-		String search=readLine();
 		String searchPhrase="";
-		library.search(search, category);
 		System.out.println("Search phrase: ");
 		searchPhrase = readLine();
 		System.out.println(library.search(searchPhrase, category));
