@@ -19,11 +19,11 @@ public class Book {
 	public String toString() {
 		
 		String result = "|Title: " + title + 
-						"| Author: " + author +
-						"| Genre: " + genre +
-						"| Publisher: " + publisher  +
-						"| Pages: " + pages + 
-						"| ISBN: " + isbn;
+						" | Author: " + author +
+						" | Genre: " + genre +
+						" | Publisher: " + publisher  +
+						" | Pages: " + pages + 
+						" | ISBN: " + isbn;
 		return result;		
 
 	}

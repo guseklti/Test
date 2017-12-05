@@ -22,6 +22,7 @@ public class Database  {
 	static Connection conn;
 	static Statement stmt;
 	final long UNIXMONTH = 2592000;
+	final long UNIXWEEK = 604800;
 	public Database() throws SQLException { 
 		createLibraryDatabase();
 		stmt = conn.createStatement();
@@ -149,9 +150,9 @@ public class Database  {
 				"("+card_id+");";
 			stmt.execute(sql);
 	}
-	public void addBorrowed(int book_id, int card_id) throws SQLException {
+	public void addBorrowed(int book_id, int card_id, int nrWeeks) throws SQLException {
 		long unixBorrowed = System.currentTimeMillis() / 1000L;
-		long unixReturn = unixBorrowed + UNIXMONTH;
+		long unixReturn = unixBorrowed + (UNIXWEEK * nrWeeks);
 		String sql = "INSERT INTO borrowed_books" +
 					"(book_id, card_id, borrowed_epoch, return_epoch)"  +
 					"VALUES " +
@@ -172,29 +173,11 @@ public class Database  {
 	}
 	public BorrowedBook[] getBorrowedBooks(int card_id) throws SQLException {
 
-		ArrayList<BorrowedBook> borrowed_list = new ArrayList<BorrowedBook>();
-		String title, author, genre, publisher;
-		long isbn, borrowed_epoch, return_epoch;
-		int pages, book_id;
 		String sql = "SELECT * FROM books INNER JOIN borrowed_books USING(book_id)"
 					+ " WHERE card_id = "+card_id;
 		
-		ResultSet rs = stmt.executeQuery(sql);		
-		
-		while (rs.next()) {
-			book_id = rs.getInt("book_id");
-			borrowed_epoch = rs.getLong("borrowed_epoch");
-			return_epoch = rs.getLong("return_epoch");
-			title = rs.getString("title");
-			author = rs.getString("author");
-			genre = rs.getString("genre");
-			publisher = rs.getString("publisher");
-			isbn = rs.getLong("isbn");
-			pages = rs.getInt("pages");
-			BorrowedBook temp = new BorrowedBook(book_id,title, author, genre, publisher, pages, isbn, borrowed_epoch, return_epoch, card_id);
-			borrowed_list.add(temp);	
-		}
-		BorrowedBook[] borrowedArray = borrowed_list.toArray(new BorrowedBook[borrowed_list.size()]);
+		ResultSet borrowedSet = stmt.executeQuery(sql);		
+		BorrowedBook[] borrowedArray = getBorrowedArray(borrowedSet, card_id );
 		return borrowedArray;
 	}
 	public BorrowedBook getOneBorrowedBook(int card_id, int book_id) throws SQLException {
@@ -304,7 +287,7 @@ public class Database  {
 			double[] rating = getRating(searchedArray);
 			
 			for(int i = 0; i < searchedArray.length; i++) {
-				result+= String.format("%s | Rating: %.1f",searchedArray[i], rating[i]);
+				result+= String.format("%s | Rating: %.1f | # Available: %d",searchedArray[i], rating[i], getNumberAvailable(searchedArray[i].getBook_ID()));
 			}
 		}
 		catch(Exception e) {
@@ -409,5 +392,68 @@ public class Database  {
 		pstmt.close();
 		return;
 	}
+	public BorrowedBook[] getBorrowedArray(ResultSet borrowedSet, int card_id) throws SQLException {
+		
+		ArrayList<BorrowedBook> borrowed_list = new ArrayList<BorrowedBook>();
+		String title, author, genre, publisher;
+		long isbn, borrowed_epoch, return_epoch;
+		int pages, book_id;
 	
+		while (borrowedSet.next()) {
+			book_id = borrowedSet.getInt("book_id");
+			borrowed_epoch = borrowedSet.getLong("borrowed_epoch");
+			return_epoch = borrowedSet.getLong("return_epoch");
+			title = borrowedSet.getString("title");
+			author = borrowedSet.getString("author");
+			genre = borrowedSet.getString("genre");
+			publisher = borrowedSet.getString("publisher");
+			isbn = borrowedSet.getLong("isbn");
+			pages = borrowedSet.getInt("pages");
+			BorrowedBook temp = new BorrowedBook(book_id,title, author, genre, publisher, pages, isbn, borrowed_epoch, return_epoch, card_id);
+			borrowed_list.add(temp);	
+		}
+		BorrowedBook[] borrowedArray = borrowed_list.toArray(new BorrowedBook[borrowed_list.size()]);
+		return borrowedArray;
+	}
+	public Book[] getBookArray(ResultSet bookSet) throws SQLException {
+		
+		ArrayList<Book> bookList = new ArrayList<Book>();
+		String title, author, genre, publisher;
+		long isbn;
+		int pages, book_id;
+		while (bookSet.next()) {
+			book_id = bookSet.getInt("book_id");
+			title = bookSet.getString("title");
+			author = bookSet.getString("author");
+			genre = bookSet.getString("genre");
+			publisher = bookSet.getString("publisher");
+			isbn = bookSet.getLong("isbn");
+			pages = bookSet.getInt("pages");
+			Book temp = new Book(title, author, genre, publisher, pages, isbn, book_id);
+			bookList.add(temp);	
+		}
+		Book[] bookArray = bookList.toArray(new Book[bookList.size()]);
+		return bookArray;
+	}
+	public Book[] getGenreBooks(String genre) throws SQLException {
+		
+		String sql = "SELECT * FROM books WHERE genre = ?";
+		
+		PreparedStatement getBooks = conn.prepareStatement(sql);
+		getBooks.setString(1, genre);
+		ResultSet genreBooks = getBooks.executeQuery();
+		Book[] result = getBookArray(genreBooks);
+		return result;
+	}
+	public int getNumberAvailable(int book_id) throws SQLException {
+		int quantity, borrowed, result;
+		String countBooks = "SELECT count(*) FROM borrowed_books WHERE book_id ="+book_id;
+		ResultSet nrOfBorrowed = stmt.executeQuery(countBooks);
+		borrowed = nrOfBorrowed.getInt(1);
+		String sqlQuantity = "SELECT quantity FROM books WHERE book_id ="+book_id;
+		ResultSet bookQuantity = stmt.executeQuery(sqlQuantity);
+		quantity = bookQuantity.getInt("quantity");
+		result = quantity - borrowed;
+		return result;		
+	}
 }

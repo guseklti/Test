@@ -75,7 +75,7 @@ public class Main {
 			case 4:
 				listBorrowedBooks();
 			case 5:
-				checkAvailable();
+				//checkAvailable();
 				break;
 			case 6:
 				reserveBook();
@@ -95,7 +95,7 @@ public class Main {
 			}
 		} while (choice != 0);
 	}
-	public  String menuList() {
+	public String menuList() {
 		String result = "======|| Welcome to the Library Database ||=====" + EOL +
 				"1. List a databse" + EOL +
 				"2. Search for a book" + EOL +
@@ -191,7 +191,7 @@ public class Main {
 		library.addCustomer(card_id, name, address, phone_nr);
 	}
 	public void borrowBook() throws SQLException {
-		int card_id, book_id;
+		int card_id, book_id, nrWeeks;
 		System.out.println("Input the ID of the chosen book: ");
 		book_id = readInt();
 		card_id = readCardID();
@@ -203,7 +203,10 @@ public class Main {
 			System.out.println("All copies of this book is currently lent out.");
 			return;
 		}
-		else {library.addBorrowed(book_id, card_id);}
+		else {
+			nrWeeks = readWeeks();
+			library.addBorrowed(book_id, card_id, nrWeeks);
+		}
 	}
 	public void listBorrowedBooks() throws SQLException {
 		int card_id;
@@ -228,8 +231,8 @@ public class Main {
 	public void listBorrowedBooks(boolean admin) throws SQLException {
 		//TO-DO
 	}
-	public void checkAvailable() {
-		//TO-DO
+	public void checkAvailableAmount() {
+		
 	}
 	public void reserveBook() {
 		//TO-DO
@@ -255,6 +258,19 @@ public class Main {
 		}
 		else {
 			System.out.println("Rating must be between 1 to 5.");
+			readRating();
+		}
+		return result;
+	}
+	public int readWeeks() {
+		int result;
+		System.out.println("How many weeks would you like to borrow the book? (No more than 8 consecutive weeks)");
+		result = readInt();
+		if(result >= 1 && result <= 8) {
+			return result;
+		}
+		else {
+			System.out.println("The amount of weeks must be between 1 and 8.");
 			readRating();
 		}
 		return result;
