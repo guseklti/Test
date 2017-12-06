@@ -213,16 +213,20 @@ public class Main {
 		card_id = readCardID();
 		String listOfBooks = "";
 		BorrowedBook[] borrowedList = library.getBorrowedBooks(card_id);
-		
-		for(int i = 0; i < borrowedList.length; i++) {
-			
-			listOfBooks+= borrowedList[i].toString() + EOL;
+		if (borrowedList.length <= 0) {
+			System.out.println("You currently have no borrowed books.");
+		}
+		else {
+			for(int i = 0; i < borrowedList.length; i++) {
+				listOfBooks+= borrowedList[i].toString() + EOL;
+			}
 		}
 		System.out.println(listOfBooks);
 	}
 	public void listBorrowedBooks(int card_id) throws SQLException {
 		String listOfBooks = "";
 		BorrowedBook[] borrowedList = library.getBorrowedBooks(card_id);
+
 		for(int i = 0; i < borrowedList.length; i++) {
 			listOfBooks+= borrowedList[i].toStringReturn() + EOL;
 		}
@@ -361,7 +365,10 @@ public class Main {
 		String searchPhrase="";
 		System.out.println("Search phrase: ");
 		searchPhrase = readLine();
-		System.out.println(library.search(searchPhrase, category));
+		Book[] searchResult = library.search(searchPhrase, category);
+		for (Book book : searchResult) {
+			System.out.println(book);
+		}
 	}
 	public static void main(String[] args) throws SQLException {
 		Main program = new Main();

@@ -108,7 +108,8 @@ public class Database  {
 				"card_id INTEGER NOT NULL, " +
 				"book_id INTEGER NOT NULL,  " +
 				"returned_on_time TEXT NOT NULL,  " +
-				"rating INTEGER " +
+				"rating INTEGER, " +
+				" UNIQUE (card_id, book_id) ON CONFLICT REPLACE" +
 				");";
 			stmt.execute(sql);
 	}
@@ -203,7 +204,8 @@ public class Database  {
 	public String searchOneBook(int book_id) throws SQLException {
 		String title, author, genre, publisher;
 		long isbn;
-		int pages;
+		int pages, quantity;
+		double rating;
 		String sql = "SELECT * FROM books books "
 					+ " WHERE book_id = "+book_id;
 		
@@ -214,7 +216,9 @@ public class Database  {
 		publisher = rs.getString("publisher");
 		isbn = rs.getLong("isbn");
 		pages = rs.getInt("pages");
-		Book searchedBook = new Book(title, author, genre, publisher, pages, isbn, book_id);			
+		quantity = getNumberAvailable(book_id);
+		rating = getRating(book_id);
+		Book searchedBook = new Book(title, author, genre, publisher, pages, isbn, book_id, quantity, rating);			
 		String result = searchedBook.toString();
 		rs.close();
 		stmt.close();
@@ -263,8 +267,7 @@ public class Database  {
 		}		
 		return result;
 	}
-	public String search(String search, String category) {
-		String result = "";
+	public Book[] search(String search, String category) {
 		ArrayList<Book> searchedBooks = new ArrayList<Book>();
 		String sql = "SELECT * FROM books " +
 				"WHERE "+category+" LIKE '%"+search+"%' "+ 
@@ -280,20 +283,18 @@ public class Database  {
 				int shelf = rs.getInt("shelf");	  
 				int book_id = rs.getInt("book_id");
 				long isbn = rs.getLong("isbn");
-				Book temp = new Book(title, author, genre, publisher, pages, isbn, book_id);	
+				int quantity = getNumberAvailable(book_id);
+				double rating = getRating(book_id);
+				Book temp = new Book(title, author, genre, publisher, pages, isbn, book_id, quantity, rating);	
 				searchedBooks.add(temp);
 			}
 			Book[] searchedArray = searchedBooks.toArray(new Book[searchedBooks.size()]);
-			double[] rating = getRating(searchedArray);
-			
-			for(int i = 0; i < searchedArray.length; i++) {
-				result+= String.format("%s | Rating: %.1f | # Available: %d",searchedArray[i], rating[i], getNumberAvailable(searchedArray[i].getBook_ID()));
-			}
+			return searchedArray;
 		}
 		catch(Exception e) {
 			JOptionPane.showMessageDialog(null, e);
 		}
-		return result;
+		return null;
 	}
 	public double[] getRating(Book[] searchedArray) throws SQLException {
 		
@@ -313,6 +314,24 @@ public class Database  {
 		}
 		
 		return ratingArray;
+	}
+	public double getRating(int book_id) throws SQLException {
+		
+		double rating;
+		int count, sum;
+		String sqlCount = "SELECT count(*) FROM history WHERE book_id =" + book_id + " AND rating > 0";
+		String sqlSum = "SELECT sum(rating) FROM history WHERE book_id =" + book_id;
+		ResultSet rsCount = stmt.executeQuery(sqlCount);
+		count = rsCount.getInt(1);
+		ResultSet rsSum = stmt.executeQuery(sqlSum);
+		sum =rsSum.getInt(1);
+		rsCount.close();
+		rsSum.close();
+		if (count == 0) {
+			return 0;
+		}
+		rating = sum / count; 
+		return rating;
 	}
 	public void addDebt(int card_id, int debt) throws SQLException {
 		String sql = "UPDATE customer_debt " +
@@ -420,7 +439,8 @@ public class Database  {
 		ArrayList<Book> bookList = new ArrayList<Book>();
 		String title, author, genre, publisher;
 		long isbn;
-		int pages, book_id;
+		int pages, book_id, quantity;
+		double rating;
 		while (bookSet.next()) {
 			book_id = bookSet.getInt("book_id");
 			title = bookSet.getString("title");
@@ -429,7 +449,9 @@ public class Database  {
 			publisher = bookSet.getString("publisher");
 			isbn = bookSet.getLong("isbn");
 			pages = bookSet.getInt("pages");
-			Book temp = new Book(title, author, genre, publisher, pages, isbn, book_id);
+			quantity = getNumberAvailable(book_id);
+			rating = getRating(book_id);
+			Book temp = new Book(title, author, genre, publisher, pages, isbn, book_id, quantity, rating);
 			bookList.add(temp);	
 		}
 		Book[] bookArray = bookList.toArray(new Book[bookList.size()]);
