@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
+<<<<<<< HEAD
 	<name>JavaGuiDemo</name>
+=======
+	<name>TestDB2</name>
+>>>>>>> f1f5798fede05ec4f4bf88a3dd65bd0eed9df415
 	<comment></comment>
 	<projects>
 	</projects>
