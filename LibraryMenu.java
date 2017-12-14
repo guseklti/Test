@@ -65,6 +65,7 @@ public class LibraryMenu {
 	private JPasswordField passwordField;
 	private JButton btnAdminBack;
 	private JPanel pnlAdminInterface;
+	private JPanel pnlAddBook_1;
 	private JLabel lblUserID;
 	private JLabel lblName;
 	private JLabel lblTelNum;
@@ -76,10 +77,21 @@ public class LibraryMenu {
 	private JTextArea txtAreaTelNum;
 	private JScrollPane scrAddress;
 	private JTextArea txtAreaAdress;
+	private JPanel pnlSearchBook;
+	private JLabel lblAdminSearch;
+	private JLabel lblUsersID;
+	private JScrollPane scrUsersID;
+	private JTextArea txtAreaUsersID;
+	private JLabel UsersName;
+	private JScrollPane scrUsersName;
+	private JTextArea txtAreaUsersName;
+	private JLabel lblSearchTitle;
+	private JScrollPane scrSearchTitle;
+	private JTextArea txtAreaSearchTitle;
+	private JLabel lblSearchAuthor;
+	private JScrollPane scrSearchAuthor;
+	private JTextArea txtAreaSearchAuthor;
 	private JButton btnAddUser;
-	private JPanel pnlUserStatus;
-	private JButton btnBookStatus;
-	private JPanel pnlBookStatus;
 
 	/**
 	 * Launch the application.
@@ -261,7 +273,7 @@ public class LibraryMenu {
 		btnBorrowedBack.setFont(new Font("Lucida Grande", Font.PLAIN, 11));
 		
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Borrowed Books", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel.setBorder(new TitledBorder(null, "Books", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GroupLayout gl_pnlBorrowed = new GroupLayout(pnlBorrowed);
 		gl_pnlBorrowed.setHorizontalGroup(
 			gl_pnlBorrowed.createParallelGroup(Alignment.TRAILING)
@@ -271,10 +283,10 @@ public class LibraryMenu {
 						.addGroup(gl_pnlBorrowed.createSequentialGroup()
 							.addComponent(btnBorrowedBack, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
 							.addGap(240)
-							.addComponent(lblBorrowedBooks, GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+							.addComponent(lblBorrowedBooks, GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
 							.addGap(312))
-						.addComponent(separator_1, GroupLayout.DEFAULT_SIZE, 852, Short.MAX_VALUE)
-						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 553, GroupLayout.PREFERRED_SIZE))
+						.addComponent(separator_1, GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE)
+						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 414, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		gl_pnlBorrowed.setVerticalGroup(
@@ -292,29 +304,19 @@ public class LibraryMenu {
 		);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		
-		JButton btnReturnBook = new JButton("Return Book");
-		btnReturnBook.setFont(new Font("Lucida Grande", Font.PLAIN, 13));
-		btnReturnBook.setIcon(new ImageIcon(LibraryMenu.class.getResource("/MP/resources/arrow_undo.png")));
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
-					.addContainerGap()
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 391, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
-					.addComponent(btnReturnBook)
-					.addContainerGap(25, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
 					.addContainerGap())
-				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
-					.addContainerGap(276, Short.MAX_VALUE)
-					.addComponent(btnReturnBook)
-					.addGap(21))
 		);
 		panel.setLayout(gl_panel);
 		pnlBorrowed.setLayout(gl_pnlBorrowed);
@@ -417,11 +419,23 @@ public class LibraryMenu {
 		
 		JSeparator separator_4 = new JSeparator();
 		
+		JLabel lblAddUser = new JLabel("Add a user");
+		
+		JLabel lblAddABook = new JLabel("Add a book");
+		
 		JPanel pnlAddUser = new JPanel();
-		pnlAddUser.setBorder(new TitledBorder(null, "Add a user", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlAddUser.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		
 		JPanel pnlAddBook = new JPanel();
-		pnlAddBook.setBorder(new TitledBorder(null, "Add a book", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlAddBook.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		
+		pnlAddBook_1 = new JPanel();
+		pnlAddBook_1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		
+		pnlSearchBook = new JPanel();
+		pnlSearchBook.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		
+		lblAdminSearch = new JLabel("Search for a book");
 		
 		JButton btnHome = new JButton("");
 		btnHome.addActionListener(new ActionListener() {
@@ -431,68 +445,154 @@ public class LibraryMenu {
 			}
 		});
 		btnHome.setIcon(new ImageIcon(LibraryMenu.class.getResource("/MP/resources/home.png")));
-		
-		JButton btnUserStatus = new JButton("User Status");
-		btnUserStatus.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				pnlAdminInterface.setVisible(false);
-				pnlUserStatus.setVisible(true);
-			}
-		});
-		
-		btnBookStatus = new JButton("Book Status");
-		btnBookStatus.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				pnlAdminInterface.setVisible(false);
-				pnlBookStatus.setVisible(true);
-			}
-		});
-		
-		JButton btnLogout = new JButton("Logout");
 		GroupLayout gl_pnlAdminInterface = new GroupLayout(pnlAdminInterface);
 		gl_pnlAdminInterface.setHorizontalGroup(
 			gl_pnlAdminInterface.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_pnlAdminInterface.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING)
-						.addComponent(separator_4, GroupLayout.DEFAULT_SIZE, 852, Short.MAX_VALUE)
+					.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_pnlAdminInterface.createSequentialGroup()
+							.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING)
+								.addComponent(separator_4, GroupLayout.DEFAULT_SIZE, 852, Short.MAX_VALUE)
+								.addGroup(gl_pnlAdminInterface.createSequentialGroup()
+									.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING)
+										.addComponent(lblAddUser)
+										.addComponent(pnlAddUser, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE))
+									.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_pnlAdminInterface.createSequentialGroup()
+											.addGap(18)
+											.addComponent(lblAddABook))
+										.addGroup(gl_pnlAdminInterface.createSequentialGroup()
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(pnlAddBook, GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)))
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(pnlAddBook_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING)
+										.addComponent(lblAdminSearch)
+										.addComponent(pnlSearchBook, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE))))
+							.addContainerGap())
 						.addGroup(gl_pnlAdminInterface.createSequentialGroup()
 							.addComponent(lblDashbord, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 635, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED, 708, Short.MAX_VALUE)
 							.addComponent(btnHome)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnLogout))
-						.addGroup(gl_pnlAdminInterface.createSequentialGroup()
-							.addComponent(pnlAddUser, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE)
-							.addGap(27)
-							.addComponent(pnlAddBook, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addGap(40)
-							.addComponent(btnUserStatus)
-							.addGap(41)
-							.addComponent(btnBookStatus)))
-					.addContainerGap())
+							.addGap(27))))
 		);
 		gl_pnlAdminInterface.setVerticalGroup(
 			gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_pnlAdminInterface.createSequentialGroup()
-					.addGap(7)
+					.addContainerGap()
 					.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lblDashbord)
-						.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING)
-							.addComponent(btnHome)
-							.addComponent(btnLogout)))
+						.addComponent(btnHome))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(separator_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING, false)
-						.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.BASELINE, false)
-							.addComponent(pnlAddUser, GroupLayout.PREFERRED_SIZE, 371, GroupLayout.PREFERRED_SIZE)
-							.addComponent(pnlAddBook, GroupLayout.PREFERRED_SIZE, 371, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.BASELINE)
-							.addComponent(btnUserStatus)
-							.addComponent(btnBookStatus)))
-					.addContainerGap())
+					.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_pnlAdminInterface.createSequentialGroup()
+							.addGap(3)
+							.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblAddUser)
+								.addComponent(lblAddABook))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(pnlAddBook, 0, 0, Short.MAX_VALUE)
+								.addComponent(pnlAddUser, GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)))
+						.addGroup(gl_pnlAdminInterface.createSequentialGroup()
+							.addGap(7)
+							.addComponent(lblAdminSearch)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(gl_pnlAdminInterface.createParallelGroup(Alignment.LEADING)
+								.addComponent(pnlAddBook_1, GroupLayout.PREFERRED_SIZE, 254, GroupLayout.PREFERRED_SIZE)
+								.addComponent(pnlSearchBook, GroupLayout.PREFERRED_SIZE, 302, GroupLayout.PREFERRED_SIZE))))
+					.addContainerGap(22, Short.MAX_VALUE))
 		);
+		
+		lblSearchTitle = new JLabel("Title:");
+		
+		scrSearchTitle = new JScrollPane();
+		
+		lblSearchAuthor = new JLabel("Author:");
+		
+		scrSearchAuthor = new JScrollPane();
+		GroupLayout gl_pnlSearchBook = new GroupLayout(pnlSearchBook);
+		gl_pnlSearchBook.setHorizontalGroup(
+			gl_pnlSearchBook.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlSearchBook.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_pnlSearchBook.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(lblSearchTitle)
+						.addComponent(scrSearchTitle, GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
+						.addComponent(lblSearchAuthor)
+						.addComponent(scrSearchAuthor))
+					.addContainerGap(7, Short.MAX_VALUE))
+		);
+		gl_pnlSearchBook.setVerticalGroup(
+			gl_pnlSearchBook.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlSearchBook.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblSearchTitle)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrSearchTitle, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(lblSearchAuthor)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrSearchAuthor, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(193, Short.MAX_VALUE))
+		);
+		
+		txtAreaSearchAuthor = new JTextArea();
+		scrSearchAuthor.setViewportView(txtAreaSearchAuthor);
+		
+		txtAreaSearchTitle = new JTextArea();
+		scrSearchTitle.setViewportView(txtAreaSearchTitle);
+		pnlSearchBook.setLayout(gl_pnlSearchBook);
+		
+		lblUsersID = new JLabel("User's ID:");
+		
+		scrUsersID = new JScrollPane();
+		
+		UsersName = new JLabel("User's name:");
+		
+		scrUsersName = new JScrollPane();
+		
+		JButton btnSearchUser = new JButton("");
+		btnSearchUser.setIcon(new ImageIcon(LibraryMenu.class.getResource("/MP/resources/find (1).png")));
+		GroupLayout gl_pnlAddBook_1 = new GroupLayout(pnlAddBook_1);
+		gl_pnlAddBook_1.setHorizontalGroup(
+			gl_pnlAddBook_1.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlAddBook_1.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_pnlAddBook_1.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_pnlAddBook_1.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(lblUsersID)
+							.addComponent(scrUsersID, GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+							.addComponent(UsersName)
+							.addComponent(scrUsersName))
+						.addComponent(btnSearchUser))
+					.addContainerGap(17, Short.MAX_VALUE))
+		);
+		gl_pnlAddBook_1.setVerticalGroup(
+			gl_pnlAddBook_1.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlAddBook_1.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblUsersID)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrUsersID, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(UsersName)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrUsersName, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnSearchUser)
+					.addContainerGap(181, Short.MAX_VALUE))
+		);
+		
+		txtAreaUsersName = new JTextArea();
+		scrUsersName.setViewportView(txtAreaUsersName);
+		
+		txtAreaUsersID = new JTextArea();
+		scrUsersID.setViewportView(txtAreaUsersID);
+		pnlAddBook_1.setLayout(gl_pnlAddBook_1);
 		
 		JLabel lblBooksId = new JLabel("Book's ID:");
 		lblBooksId.setFont(new Font("Lucida Grande", Font.PLAIN, 12));
@@ -707,256 +807,5 @@ public class LibraryMenu {
 		scrName.setViewportView(textArea);
 		pnlAddUser.setLayout(gl_pnlAddUser);
 		pnlAdminInterface.setLayout(gl_pnlAdminInterface);
-		
-		pnlUserStatus = new JPanel();
-		frmLibrary.getContentPane().add(pnlUserStatus, "name_23594220472237");
-		
-		JLabel lblUserStatus = new JLabel("User Status");
-		lblUserStatus.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUserStatus.setFont(new Font("Lucida Grande", Font.ITALIC, 16));
-		
-		JSeparator separator_3 = new JSeparator();
-		
-		JButton btnBack = new JButton("Back");
-		btnBack.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				pnlUserStatus.setVisible(false);
-				pnlAdminInterface.setVisible(true);
-			}
-		});
-		btnBack.setFont(new Font("Lucida Grande", Font.PLAIN, 13));
-		
-		JPanel pnlSearchUser = new JPanel();
-		pnlSearchUser.setBorder(new TitledBorder(null, "Search a user", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		GroupLayout gl_pnlUserStatus = new GroupLayout(pnlUserStatus);
-		gl_pnlUserStatus.setHorizontalGroup(
-			gl_pnlUserStatus.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlUserStatus.createSequentialGroup()
-					.addGap(15)
-					.addComponent(btnBack)
-					.addGap(269)
-					.addComponent(lblUserStatus, GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
-					.addGap(375))
-				.addGroup(gl_pnlUserStatus.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_pnlUserStatus.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_pnlUserStatus.createSequentialGroup()
-							.addGap(6)
-							.addComponent(pnlSearchUser, GroupLayout.PREFERRED_SIZE, 682, GroupLayout.PREFERRED_SIZE))
-						.addComponent(separator_3, GroupLayout.DEFAULT_SIZE, 852, Short.MAX_VALUE))
-					.addContainerGap())
-		);
-		gl_pnlUserStatus.setVerticalGroup(
-			gl_pnlUserStatus.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlUserStatus.createSequentialGroup()
-					.addGap(7)
-					.addGroup(gl_pnlUserStatus.createParallelGroup(Alignment.TRAILING)
-						.addComponent(btnBack)
-						.addComponent(lblUserStatus))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(separator_3, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(pnlSearchUser, GroupLayout.PREFERRED_SIZE, 351, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(21, Short.MAX_VALUE))
-		);
-		
-		JLabel lblUsersID = new JLabel("User's ID:");
-		lblUsersID.setFont(new Font("Lucida Grande", Font.PLAIN, 12));
-		
-		JScrollPane scrUsersID = new JScrollPane();
-		
-		JLabel lblUsersName = new JLabel("User's name:");
-		lblUsersName.setFont(new Font("Lucida Grande", Font.PLAIN, 12));
-		
-		JScrollPane scrUsersName = new JScrollPane();
-		
-		JScrollPane scrollPane_12 = new JScrollPane();
-		GroupLayout gl_pnlSearchUser = new GroupLayout(pnlSearchUser);
-		gl_pnlSearchUser.setHorizontalGroup(
-			gl_pnlSearchUser.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlSearchUser.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_pnlSearchUser.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(lblUsersID)
-						.addComponent(lblUsersName)
-						.addComponent(scrUsersID, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)
-						.addComponent(scrUsersName))
-					.addGap(18)
-					.addComponent(scrollPane_12, GroupLayout.PREFERRED_SIZE, 410, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(128, Short.MAX_VALUE))
-		);
-		gl_pnlSearchUser.setVerticalGroup(
-			gl_pnlSearchUser.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlSearchUser.createSequentialGroup()
-					.addGap(28)
-					.addComponent(lblUsersID)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrUsersID, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
-					.addGap(31)
-					.addComponent(lblUsersName)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrUsersName, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
-				.addGroup(gl_pnlSearchUser.createSequentialGroup()
-					.addComponent(scrollPane_12, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
-					.addGap(12))
-		);
-		
-		JTextArea txtAreaUsersName = new JTextArea();
-		scrUsersName.setViewportView(txtAreaUsersName);
-		
-		JTextArea txtAreaUsersID = new JTextArea();
-		scrUsersID.setViewportView(txtAreaUsersID);
-		pnlSearchUser.setLayout(gl_pnlSearchUser);
-		pnlUserStatus.setLayout(gl_pnlUserStatus);
-		
-		pnlBookStatus = new JPanel();
-		frmLibrary.getContentPane().add(pnlBookStatus, "name_25596092158410");
-		
-		JLabel lblBookStatus = new JLabel("Book Status");
-		lblBookStatus.setHorizontalAlignment(SwingConstants.CENTER);
-		lblBookStatus.setFont(new Font("Lucida Grande", Font.ITALIC, 16));
-		
-		JSeparator separator_5 = new JSeparator();
-		
-		JButton btnBack_1 = new JButton("Back");
-		btnBack_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				pnlBookStatus.setVisible(false);
-				pnlAdminInterface.setVisible(true);
-			}
-		});
-		
-		JPanel pnlSearchBook = new JPanel();
-		pnlSearchBook.setBorder(new TitledBorder(null, "Search a book", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		GroupLayout gl_pnlBookStatus = new GroupLayout(pnlBookStatus);
-		gl_pnlBookStatus.setHorizontalGroup(
-			gl_pnlBookStatus.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlBookStatus.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_pnlBookStatus.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_pnlBookStatus.createSequentialGroup()
-							.addComponent(btnBack_1)
-							.addGap(309)
-							.addComponent(lblBookStatus, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addGap(377))
-						.addComponent(separator_5, GroupLayout.DEFAULT_SIZE, 852, Short.MAX_VALUE)
-						.addComponent(pnlSearchBook, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
-		);
-		gl_pnlBookStatus.setVerticalGroup(
-			gl_pnlBookStatus.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlBookStatus.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_pnlBookStatus.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnBack_1)
-						.addComponent(lblBookStatus))
-					.addGap(18)
-					.addComponent(separator_5, GroupLayout.PREFERRED_SIZE, 11, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(pnlSearchBook, GroupLayout.PREFERRED_SIZE, 351, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(14, Short.MAX_VALUE))
-		);
-		
-		JLabel lblBooksTitle = new JLabel("Book's Title:");
-		lblBooksTitle.setFont(new Font("Lucida Grande", Font.PLAIN, 12));
-		
-		JLabel lblAuthor = new JLabel("Author:");
-		lblAuthor.setFont(new Font("Lucida Grande", Font.PLAIN, 12));
-		
-		JScrollPane scrBookTitle = new JScrollPane();
-		
-		JScrollPane scrBookAuthor = new JScrollPane();
-		
-		JScrollPane scrollPane_13 = new JScrollPane();
-		
-		JButton btnRemoveBook = new JButton("Remove Book");
-		btnRemoveBook.setIcon(new ImageIcon(LibraryMenu.class.getResource("/MP/resources/remove.png")));
-		btnRemoveBook.setFont(new Font("Lucida Grande", Font.PLAIN, 12));
-		
-		JButton btnEditQuantity = new JButton("Change Quantity");
-		
-		JButton btnDelayedBooks = new JButton("Delayed Books");
-		btnDelayedBooks.setFont(new Font("Lucida Grande", Font.PLAIN, 12));
-		
-		JButton btnNewButton = new JButton("Reserve Book");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-		
-		JComboBox cbSearchBy = new JComboBox();
-		cbSearchBy.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			if (cbSearchBy.getSelectedItem().equals("2. Author"))
-				scrBookAuthor.setVisible(true);
-			else
-				scrBookAuthor.setVisible(false);
-			}
-		});
-		cbSearchBy.setModel(new DefaultComboBoxModel(new String[] {"Search by…", "1.Title", "2. Author", "3. Genre ", "4.Publisher"}));
-		GroupLayout gl_pnlSearchBook = new GroupLayout(pnlSearchBook);
-		gl_pnlSearchBook.setHorizontalGroup(
-			gl_pnlSearchBook.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlSearchBook.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_pnlSearchBook.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_pnlSearchBook.createParallelGroup(Alignment.LEADING, false)
-							.addComponent(lblBooksTitle)
-							.addComponent(lblAuthor)
-							.addComponent(scrBookTitle, GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
-							.addComponent(scrBookAuthor))
-						.addComponent(cbSearchBy, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(25)
-					.addComponent(scrollPane_13, GroupLayout.PREFERRED_SIZE, 346, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_pnlSearchBook.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnDelayedBooks, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(btnNewButton)
-						.addComponent(btnEditQuantity, 0, 0, Short.MAX_VALUE)
-						.addComponent(btnRemoveBook, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-					.addContainerGap(12, Short.MAX_VALUE))
-		);
-		gl_pnlSearchBook.setVerticalGroup(
-			gl_pnlSearchBook.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_pnlSearchBook.createSequentialGroup()
-					.addGroup(gl_pnlSearchBook.createParallelGroup(Alignment.TRAILING)
-						.addGroup(Alignment.LEADING, gl_pnlSearchBook.createSequentialGroup()
-							.addGap(35)
-							.addComponent(lblBooksTitle)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(scrBookTitle, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
-							.addGap(23)
-							.addComponent(lblAuthor)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(scrBookAuthor, GroupLayout.PREFERRED_SIZE, 38, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_pnlSearchBook.createSequentialGroup()
-							.addGap(117)
-							.addComponent(btnNewButton)
-							.addGap(18)
-							.addComponent(btnDelayedBooks)
-							.addGap(18)))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_pnlSearchBook.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_pnlSearchBook.createSequentialGroup()
-							.addComponent(btnEditQuantity)
-							.addGap(18)
-							.addComponent(btnRemoveBook))
-						.addComponent(cbSearchBy, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(41))
-				.addGroup(gl_pnlSearchBook.createSequentialGroup()
-					.addContainerGap(17, Short.MAX_VALUE)
-					.addComponent(scrollPane_13, GroupLayout.PREFERRED_SIZE, 304, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
-		);
-		
-		JTextArea txtAreaBookTitle = new JTextArea();
-		scrBookTitle.setViewportView(txtAreaBookTitle);
-		
-		JTextArea txtAreaBookAuthor = new JTextArea();
-		scrBookAuthor.setViewportView(txtAreaBookAuthor);
-		pnlSearchBook.setLayout(gl_pnlSearchBook);
-		pnlBookStatus.setLayout(gl_pnlBookStatus);
 	}
 }
